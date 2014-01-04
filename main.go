@@ -56,7 +56,7 @@ func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
 
 	go func() {
 		for {
-			_, msg := c.read()
+			_, msg := c.readUDP()
 			msgChan <- msg
 		}
 	}()
@@ -84,7 +84,7 @@ func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
 	}
 }
 
-func (c *Client) read() (*net.UDPAddr, *dns.Msg) {
+func (c *Client) readUDP() (*net.UDPAddr, *dns.Msg) {
 	in := make([]byte, 1024)
 	read, addr, err := c.conn.ReadFromUDP(in)
 	if err != nil {
