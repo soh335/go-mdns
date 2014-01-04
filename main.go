@@ -79,7 +79,6 @@ func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
 					cb(msg)
 				}
 			}
-
 		}
 	}
 }
