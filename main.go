@@ -68,9 +68,6 @@ func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
 		case <-timer:
 			return
 		case msg := <-msgChan:
-			if len(msg.Answer) < 1 {
-				continue
-			}
 			for _, rr := range msg.Answer {
 				switch rr := rr.(type) {
 				case *dns.PTR:
