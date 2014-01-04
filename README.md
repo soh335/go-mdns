@@ -1,7 +1,7 @@
 # go-mdns
 
 * discover service by multicast udp
-* only discover function only
+* only discover function
 
 ## see also
 
