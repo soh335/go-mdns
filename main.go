@@ -30,6 +30,7 @@ func (c *Client) Discover(domain string, cb func(*dns.Msg)) {
 		panic(err)
 	}
 
+	defer conn.Close()
 	c.conn = conn
 
 	out, err := m.Pack()
