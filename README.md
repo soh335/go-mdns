@@ -24,4 +24,5 @@ client.Discover("_airplay._tcp.local.", func(msg *dns.Msg) {
 
 * https://github.com/soh335/go-dnssd ( dnssd implementation )
 * https://github.com/miyagawa/AnyEvent-mDNS ( multicast udp implementation by perl )
+* https://github.com/davecheney/mdns ( publish support )
 
