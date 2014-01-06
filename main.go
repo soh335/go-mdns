@@ -43,10 +43,10 @@ func (c *Client) Discover(domain string, cb func(*dns.Msg)) {
 		panic(err)
 	}
 
-	c.handleReceiveMsg(cb)
+	c.handleReceiveMsg(domain, cb)
 }
 
-func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
+func (c *Client) handleReceiveMsg(domain string, cb func(*dns.Msg)) {
 	timeout := defaultTimeout
 	if c.Timeout != 0 {
 		timeout = c.Timeout
@@ -71,9 +71,12 @@ func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
 			for _, rr := range msg.Answer {
 				switch rr := rr.(type) {
 				case *dns.PTR:
+					if rr.Header().Name != domain {
+						continue
+					}
 					ptr := rr.Ptr
 					if _, ok := found[ptr]; ok {
-						continue
+						break
 					}
 					found[ptr] = msg
 					cb(msg)
