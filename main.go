@@ -1,7 +1,6 @@
 package mdns
 
 import (
-	"fmt"
 	"github.com/miekg/dns"
 	"net"
 	"time"
@@ -93,7 +92,6 @@ func (c *Client) readUDP() (*net.UDPAddr, *dns.Msg) {
 
 	var readMsg dns.Msg
 	if err := readMsg.Unpack(in[:read]); err != nil {
-		fmt.Println(&readMsg)
 		panic(err)
 	}
 
