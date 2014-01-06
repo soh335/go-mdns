@@ -84,7 +84,7 @@ func (c *Client) handleReceiveMsg(cb func(*dns.Msg)) {
 }
 
 func (c *Client) readUDP() (*net.UDPAddr, *dns.Msg) {
-	in := make([]byte, 1024)
+	in := make([]byte, dns.DefaultMsgSize)
 	read, addr, err := c.conn.ReadFromUDP(in)
 	if err != nil {
 		panic(err)
