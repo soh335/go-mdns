@@ -53,11 +53,21 @@ func (c *Client) handleReceiveMsg(domain string, cb func(*dns.Msg)) {
 	}
 	timer := time.After(timeout)
 	msgChan := make(chan *dns.Msg)
+	closed := false
+	doneChan := make(chan bool)
 
 	go func() {
 		for {
-			_, msg := c.readUDP()
-			msgChan <- msg
+			if _, msg, err := c.readUDP(); err != nil {
+				if closed {
+					doneChan <- true
+					return
+				} else {
+					panic(err)
+				}
+			} else {
+				msgChan <- msg
+			}
 		}
 	}()
 
@@ -66,7 +76,9 @@ func (c *Client) handleReceiveMsg(domain string, cb func(*dns.Msg)) {
 	for {
 		select {
 		case <-timer:
-			return
+			closed = true
+			c.conn.Close()
+			break
 		case msg := <-msgChan:
 			for _, rr := range msg.Answer {
 				switch rr := rr.(type) {
@@ -82,21 +94,24 @@ func (c *Client) handleReceiveMsg(domain string, cb func(*dns.Msg)) {
 					cb(msg)
 				}
 			}
+		case <-doneChan:
+			return
 		}
 	}
+
 }
 
-func (c *Client) readUDP() (*net.UDPAddr, *dns.Msg) {
+func (c *Client) readUDP() (*net.UDPAddr, *dns.Msg, error) {
 	in := make([]byte, dns.DefaultMsgSize)
 	read, addr, err := c.conn.ReadFromUDP(in)
 	if err != nil {
-		panic(err)
+		return nil, nil, err
 	}
 
 	var readMsg dns.Msg
 	if err := readMsg.Unpack(in[:read]); err != nil {
-		panic(err)
+		return nil, nil, err
 	}
 
-	return addr, &readMsg
+	return addr, &readMsg, nil
 }
